@@ -17,11 +17,15 @@ classdef archivefiles < handle
                 'dateTo','2014-02-15T01:00:00.000Z');
     end
     methods
-        function self=archivefiles(token,varargin)
+        function self=archivefiles(varargin) % token,
             % creates archivefiles service object
-            self.Opts.token=token;
             self.Opts=ParseFunOpts(self.Opts,varargin);
+            self.log.setCommandWindowLevel(self.log.INFO);
             self.log.info('archivefiles','webservice interface setup');
+            if isempty(self.Opts.token)
+                self.log.debug('archivefiles','User did not provide token');
+                self.getToken()
+            end
         end
         function getList(self,varargin)
             %disp(self.url);
@@ -41,10 +45,29 @@ classdef archivefiles < handle
             
             params=struct2nameVal(getListParams);
             %params={'method','getList','token',self.token,params{:},'returnOptions','all'};
-            self.log.info('getList',nameVal2str(params))
+            self.log.debug('getList',nameVal2str(params))
+            self.log.info('getList','Getting file list...')
             [fileList, status]=urlread(self.url,'get',params);
             self.fileList=parse_json(fileList);
             %disp(status)
+        end
+        function getToken(self)
+            tokenFile=fullfile(fileparts(mfilename('fullpath')),'token.dat');
+            if exist(tokenFile,'file')
+                self.log.debug('archivefiles',['Found: ', tokenFile]);
+                JSON_string=fileread(tokenFile);
+                Info=parse_json(JSON_string);
+                self.Opts.token=Info.token;
+            else
+                web('https://dmas.uvic.ca/Profile','-browser');
+                self.Opts.token = char(inputdlg(...
+                    ['Enter your Web Services API token! ',...
+                     'It is available at https://dmas.uvic.ca/Profile ',...
+                     'and has the form of ????????-????-????-????-????????????'],'Get User Token'));
+                fid=fopen(tokenFile,'w');
+                fprintf(fid,'{"token":"%s"}\n',self.Opts.token);
+                fclose(fid);
+            end
         end
         function saveListedFiles(self,varargin)
             if isempty(self.fileList)
@@ -60,7 +83,7 @@ classdef archivefiles < handle
  
             saveFilesParams.method='getFile';            
             params=struct2nameVal(saveFilesParams);
-            self.log.info('saveListedFiles',nameVal2str(params));
+            self.log.debug('saveListedFiles',nameVal2str(params));
             
             funOpts.dataProductFormatId=0;   % Do not filter on data product
             funOpts.outDir='./data';
@@ -79,7 +102,7 @@ classdef archivefiles < handle
                 else
                     outFile=fullfile(funOpts.outDir,self.fileList{i}.filename);
                     if exist(outFile,'file');
-                        self.log.debug('saveListedFiles',...
+                        self.log.info('saveListedFiles',...
                             sprintf('Skipping %s -- it already exists',self.fileList{i}.filename));
                     else
                         self.log.info('saveListedFiles',...

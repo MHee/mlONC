@@ -1,0 +1,1 @@
+Directory used by example script to dump data.

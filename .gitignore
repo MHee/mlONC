@@ -6,3 +6,12 @@
 
 # Ignore token file
 webservices/token.dat
+*.log
+
+# Ignore html documentation...
+**/html/*
+
+# Ignore data directories
+**/data/*
+!**/data/README.md
+
