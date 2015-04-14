@@ -47,8 +47,18 @@ classdef archivefiles < handle
             %params={'method','getList','token',self.token,params{:},'returnOptions','all'};
             self.log.debug('getList',nameVal2str(params))
             self.log.info('getList','Getting file list...')
-            [fileList, status]=urlread(self.url,'get',params);
-            self.fileList=parse_json(fileList);
+            url=[self.url '?' http_paramsToString(params)];
+            [fileList, resp]=urlread2(url);
+            if resp.isGood
+                self.fileList=parse_json(fileList);
+            else
+                errMsg=sprintf('%d : %s -- Could not get fileList from server',...
+                            resp.status.value,resp.status.msg);
+                self.log.error('getList',errMsg);
+                self.log.info('getList',fileList);
+                warning(errMsg);
+                self.fileList={};
+            end
             %disp(status)
         end
         function getToken(self)
