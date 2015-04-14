@@ -117,7 +117,32 @@ classdef archivefiles < handle
                     else
                         self.log.info('saveListedFiles',...
                             sprintf('Downloading %s',self.fileList{i}.filename));
-                        urlwrite(self.url,outFile,'get',{params{:},'filename',self.fileList{i}.filename});
+                        
+                        attempts=0;
+                        while (attempts < 12)
+                            attempts=attempts+1;
+                            try
+                                [theFile,status]=urlwrite(self.url,outFile,...
+                                    'get',{params{:},'filename',self.fileList{i}.filename},...
+                                    'Timeout',10.);
+                                if status
+                                    % File successfull written
+                                    break;
+                                end
+                            catch
+                                self.log.info('saveListedFiles',...
+                                    'Something bad occured...');
+                            end
+                            tWait=2^attempts;
+                            self.log.info('saveListedFiles',...
+                                sprintf('Download failed, trying again in %d seconds!',tWait));
+                            pause(tWait);
+                        end
+                        if attempts == 12
+                            msg=sprintf('Tried 12 times to download %s... giving up',theFile);
+                            warning(msg);
+                            self.log.info('saveListedFiles',msg);
+                        end
                     end
                 end
             end
