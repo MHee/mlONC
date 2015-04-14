@@ -3,7 +3,7 @@
 % Add it to the path if we cannot find the archivefile class...
 if ~exist('archivefiles','class')
     toolbox_path=fullfile(fileparts(mfilename('fullpath')),'../../webservices');
-    addpath(toolbox_path);
+    addpath(genpath(toolbox_path));
 end
 
 %% Connect to ONC and intialize the webservice interface
