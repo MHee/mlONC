@@ -6,7 +6,9 @@ classdef archivefiles < handle
 %   To use the service you have to create a vaild token at
 %   https://dmas.uvic.ca/Profile in the  "Web Services API" tab
     properties
-        fileList=[]
+        fileList=[];
+        fileListStation='';
+        fileListDeviceCategory='';
         log=log4m.getLogger('archivefiles.log');
         url='http://dmas.uvic.ca/api/archivefiles';
         Opts=struct(...
@@ -67,7 +69,7 @@ classdef archivefiles < handle
             %disp(status)
         end
         function getToken(self)
-            tokenFile=fullfile(fileparts(mfilename('fullpath')),'token.dat');
+            tokenFile=fullfile(fileparts(mfilename('fullpath')),'../../mlONC.cfg');
             if exist(tokenFile,'file')
                 self.log.debug('archivefiles',['Found: ', tokenFile]);
                 JSON_string=fileread(tokenFile);
@@ -80,7 +82,7 @@ classdef archivefiles < handle
                      'It is available at https://dmas.uvic.ca/Profile ',...
                      'and has the form of ????????-????-????-????-????????????'],'Get User Token'));
                 fid=fopen(tokenFile,'w');
-                fprintf(fid,'{"token":"%s"}\n',self.Opts.token);
+                fprintf(fid,'{"token":"%s","version":"1.0.0.0"}\n',self.Opts.token);
                 fclose(fid);
             end
         end
@@ -121,7 +123,7 @@ classdef archivefiles < handle
                     tOut=datenum(self.fileList{i}.dateFrom,'yyyy-mm-ddTHH:MM:SS.FFF');
                     [yearOut,dayOut]=datenum2YearDay(tOut);
                     outDir=fullfile(funOpts.outDir,...
-                                    sprintf('%s_%s',self.fileListStation,self.fileListDeviceCategory),...
+                                    sprintf('%s.%s',self.fileListStation,self.fileListDeviceCategory),...
                                     yearOut,dayOut);
                     if ~exist(outDir,'dir')
                         self.log.info('saveListedFiles',...
@@ -191,8 +193,7 @@ function outCell=struct2nameVal(inStruct)
 end
 
 %%
-function out=datenum2YearDay(t)
+function [year,day]=datenum2YearDay(t)
     year=datestr(t,'yyyy');
     day=sprintf('%03d',floor(t-datenum(year,'yyyy'))+1);
-    out={year,day};
 end

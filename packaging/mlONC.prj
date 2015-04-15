@@ -1,0 +1,95 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="1114360026" file="S:\mlONC\packaging\mlONC.prj" location="S:\mlONC\packaging" name="mlONC" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>mlONC</param.appname>
+    <param.authnamewatermark>Martin Heesemann</param.authnamewatermark>
+    <param.email>mheesema@uvic.ca</param.email>
+    <param.company>Ocean Networks Canada</param.company>
+    <param.summary>Matlab toolbox to work with Ocean Networks Canada data</param.summary>
+    <param.description>Access to webservices and local file cache</param.description>
+    <param.screenshot>${PROJECT_ROOT}\ONC_Octopus_Logo_RGB.png</param.screenshot>
+    <param.version>1.0.0.0002</param.version>
+    <param.output>${PROJECT_ROOT}\mlONC.mltbx</param.output>
+    <param.products.name>
+      <item>MATLAB</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.4</item>
+    </param.products.version>
+    <param.platforms />
+    <param.guid>6cda5c69-9988-4d37-b1c4-953f7e275cd6</param.guid>
+    <param.exclude.filters>.gitignore
+.git
+instruments/hydrophones/data
+packaging
+webservices/token.dat
+% List files contained in your toolbox folder that you would like to exclude
+% from packaging.  Excludes should be listed relative to the toolbox folder.
+% Some examples of how to specify excludes are provided below:
+%
+% A single file in the toolbox folder:
+% .svn
+%
+% A single file in a subfolder of the toolbox folder:
+% example/.svn
+%
+% All files in a subfolder of the toolbox folder:
+% example/*
+%
+% All files of a certain name in all subfolders of the toolbox folder:
+% **/.svn
+%
+% All files matching a pattern in all subfolders of the toolbox folder:
+% **/*.bak
+%</param.exclude.filters>
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples/&gt;</param.examples>
+    <param.demosxml />
+    <param.apps />
+    <param.docs />
+    <unset>
+      <param.output />
+      <param.platforms />
+      <param.demosxml />
+      <param.apps />
+      <param.docs />
+    </unset>
+    <fileset.rootdir>
+      <file>S:\mlONC</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>S:\mlONC\instruments</file>
+      <file>S:\mlONC\LICENSE</file>
+      <file>S:\mlONC\README.md</file>
+      <file>S:\mlONC\webservices</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="S:\mlONC\packaging" name="mlONC.mltbx" optional="false">S:\mlONC\packaging\mlONC.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2014b</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>6.1</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
