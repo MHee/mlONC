@@ -50,7 +50,9 @@ classdef archivefiles < handle
             url=[self.url '?' http_paramsToString(params)];
             [fileList, resp]=urlread2(url);
             if resp.isGood
+                self.log.info('getList','Parsing JSON into fileList');
                 self.fileList=parse_json(fileList);
+                self.log.info('getList',sprintf('Got list of %d files.',length(self.fileList)));
             else
                 errMsg=sprintf('%d : %s -- Could not get fileList from server',...
                             resp.status.value,resp.status.msg);
