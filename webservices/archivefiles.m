@@ -43,6 +43,9 @@ classdef archivefiles < handle
             getListParams.method='getList';
             getListParams.returnOptions='all';
             
+            self.fileListStation=getListParams.station;
+            self.fileListDeviceCategory=getListParams.deviceCategory;
+            
             params=struct2nameVal(getListParams);
             %params={'method','getList','token',self.token,params{:},'returnOptions','all'};
             self.log.debug('getList',nameVal2str(params))
@@ -102,7 +105,10 @@ classdef archivefiles < handle
             funOpts=ParseFunOpts(funOpts,otherParams);
            
             if ~exist(funOpts.outDir,'dir')
-                error('Output directory %s does not exist!',funOpts.outDir);
+                warning('Output directory %s does not exist!',funOpts.outDir);
+                self.log.info('saveListedFiles',...
+                            sprintf('Creating %s',funOpts.outDir));
+                mkdir(funOpts.outDir);
             end 
             
             for i =1:length(self.fileList)
@@ -112,7 +118,17 @@ classdef archivefiles < handle
                         sprintf('Skipping %s -- wrong format',self.fileList{i}.filename));
                     continue;
                 else
-                    outFile=fullfile(funOpts.outDir,self.fileList{i}.filename);
+                    tOut=datenum(self.fileList{i}.dateFrom,'yyyy-mm-ddTHH:MM:SS.FFF');
+                    [yearOut,dayOut]=datenum2YearDay(tOut);
+                    outDir=fullfile(funOpts.outDir,...
+                                    sprintf('%s_%s',self.fileListStation,self.fileListDeviceCategory),...
+                                    yearOut,dayOut);
+                    if ~exist(outDir,'dir')
+                        self.log.info('saveListedFiles',...
+                            sprintf('Creating %s',outDir));
+                        mkdir(outDir);
+                    end
+                    outFile=fullfile(outDir,self.fileList{i}.filename);
                     if exist(outFile,'file');
                         self.log.info('saveListedFiles',...
                             sprintf('Skipping %s -- it already exists',self.fileList{i}.filename));
@@ -172,4 +188,11 @@ function outCell=struct2nameVal(inStruct)
         cnt=cnt+1;
         %disp(outCell)
     end  
+end
+
+%%
+function out=datenum2YearDay(t)
+    year=datestr(t,'yyyy');
+    day=sprintf('%03d',floor(t-datenum(year,'yyyy'))+1);
+    out={year,day};
 end
